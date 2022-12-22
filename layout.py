@@ -1,6 +1,5 @@
 
 import plotly.graph_objects as go
-import tree
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_cytoscape as cyto
@@ -8,8 +7,9 @@ import dash_table
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, Input, Output
 from dash_table.Format import Format, Scheme
-
-elements = tree.get_nodes() + tree.get_edges()
+import tree
+elements = []
+# elements = tree.get_nodes() + tree.get_edges()
 params = [
     ('v1', ['V', 'v1']),
     ('v2', ['V', 'v2']),
@@ -26,11 +26,11 @@ def description_card():
     return html.Div(
         id="description-card",
         children=[
-            html.H5("Clinical Analytics"),
-            html.H3("Welcome to the Clinical Analytics Dashboard"),
+            html.H5("Risk Analysis"),
+            html.H3("Welcome to the decision making under risk and uncertainty."),
             html.Div(
                 id="intro",
-                children="Explore clinic patient volume by time of day, waiting time, and care score. Click on the heatmap to visualize patient experience at different time points.",
+                children="Insert input data to visualize calculation values and propose a decision path.",
             ),
         ],
     )
@@ -76,14 +76,17 @@ def generate_control_card():
     )
 
 
-def generate_results():
-    return html.Div([ 
+def generate_table():
+    return html.Div(
     dash_table.DataTable(
         id='table-results'
-    ),
-    cyto.Cytoscape(
-        id='cytoscape-layout',
-        layout={'name': 'grid'},
-        style={'width': '100%', 'height': '450px'},
-        elements=elements
-    )])
+    ))
+    
+def generate_graph():
+    return html.Div(
+        cyto.Cytoscape(
+            id='cytoscape',
+            layout={'name': 'preset'},
+            style={'width': '100%', 'height': '600px'},
+            elements=elements
+        ))
