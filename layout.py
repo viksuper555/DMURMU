@@ -52,9 +52,15 @@ def generate_control_card():
                     [{'id': p[0], 'name': p[1], 'type': 'numeric'} for p in params]
                 ),
                 data=[
-                    dict(ti=f'ϑ{i}', **{param[0]: 0 for param in params})
-                    for i in range(1, 5)
+                    {'ti': 'ϑ1', 'v1': -100000, 'v2': 0, 'pti': 0.16, 'ε1': 1, 'ε2': 0, 'ε3': 0}, 
+                    {'ti': 'ϑ2', 'v1': 50000, 'v2': 0, 'pti': 0.32, 'ε1': 0.1, 'ε2': 0.9, 'ε3': 0}, 
+                    {'ti': 'ϑ3', 'v1': 100000, 'v2': 0, 'pti': 0.36, 'ε1': 0, 'ε2': 1, 'ε3': 0}, 
+                    {'ti': 'ϑ4', 'v1': 200000, 'v2': 0, 'pti': 0.16, 'ε1': 0, 'ε2': 0, 'ε3': 1}
                 ],
+                # data=[
+                #     dict(ti=f'ϑ{i}', **{param[0]: 0 for param in params})
+                #     for i in range(1, 5)
+                # ],
                 css=[
                 {"selector": ".column-header--delete svg", "rule": 'display: "none"'},
                 {"selector": ".column-header--delete::before", "rule": 'content: "X"'}
@@ -73,6 +79,7 @@ def generate_control_card():
                 id="value_input",
                 type='number',
                 placeholder="Please enter value.",
+                value=23000
             ),
             html.Br(),
             dbc.Label('Cost of experiment:'),
@@ -80,6 +87,7 @@ def generate_control_card():
                 id="cost_input",
                 type='number',
                 placeholder="Please enter cost.",
+                value=5000
             ),
             html.Br(),
             html.Div(

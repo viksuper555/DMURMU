@@ -84,7 +84,7 @@ app.layout = html.Div(
         html.Div(
             id="banner",
             className="banner",
-            children=[html.Img(src=app.get_asset_url("plotly_logo.png"))],
+            children=[html.Img(src=app.get_asset_url("super5_logo.png"))],
         ),
         # Left column
         html.Div(
