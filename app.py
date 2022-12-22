@@ -1,20 +1,16 @@
 import dash_html_components as html
 from layout import description_card, generate_control_card, generate_graph, generate_table
 import dash_bootstrap_components as dbc
-from dash import Dash, Input, State, Output, no_update
+from dash import Dash, Input, State, Output
 import pandas as pd
 import tree
 from dash.exceptions import PreventUpdate
-# app = Flask(__name__)
+import helpers
 
-# @app.route("/")
-# def hello_world():
-#     return "<p>Hello, World!</p>"
+dash_app = Dash(__name__, external_stylesheets=[dbc.themes.LITERA])
+dash_app.title = "Decision making under risk and uncertainty"
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.LITERA])
-app.title = "Decision making under risk and uncertainty"
-
-@app.callback(
+@dash_app.callback(
     [
         Output('table-results','data'),
         Output('table-results','columns'),
@@ -27,7 +23,6 @@ app.title = "Decision making under risk and uncertainty"
         State('value_input', 'value'),
         State('cost_input', 'value'),
     ])
-
 def update_datatable(n_clicks, df, value, cost):            
     if not n_clicks or not df or len(df) < 1:
         raise PreventUpdate
@@ -36,14 +31,14 @@ def update_datatable(n_clicks, df, value, cost):
     if not cost:
         cost = 0
     df = pd.DataFrame(df)
-    calc = calculate_result(df)
+    calc = helpers.calculate_result(df)
     columns = [{'name': col, 'id': col} for col in calc.columns]
     elements = tree.add_basic_calcs(value, cost) + tree.build_tree_no_analysis(df) + tree.build_tree_analysis(df, calc, cost, glob_offset=350)    
     best = None 
     for el in elements:
         id = el.get('data').get('id')
         if id and id.startswith("total"):
-            if not best or parse(el) > parse(best):
+            if not best or helpers.parse(el) > helpers.parse(best):
                 best = el
         
     id = best.get('data').get('id')
@@ -57,34 +52,19 @@ def update_datatable(n_clicks, df, value, cost):
     else:
         text += f'analysis without experiment, '
 
-    text += f'you can earn up to {parse(best)}.'
+    text += f'you can earn up to {helpers.parse(best)}.'
 
     return calc.to_dict(orient='records'), columns, elements, text
 
-def calculate_result(df):
-    ti_len = len(df['ti'])
-    prods = {"ε1":[tree.sum_product(df, 'pti', 'ε1')], 
-             "ε2":[tree.sum_product(df, 'pti', 'ε2')],
-             "ε3":[tree.sum_product(df, 'pti', 'ε3')]}
-    for eps in range(1, len(prods)+1):
-        for ti in range(0, ti_len):
-            prods[f"ε{eps}"].append(df['pti'][ti]*df[f'ε{eps}'][ti]/prods[f"ε{eps}"][0])
-    
-    df = pd.DataFrame(prods).T.round(4).reset_index()
-    df.columns = ['ε', 'p(ε)'] + [f'ϑ{x+1}' for x in range(ti_len)]
-    return df
 
-def parse(el):
-    return float(el.get('data').get('label'))
-
-app.layout = html.Div(
+dash_app.layout = html.Div(
     id="app-container",
     children=[
         # Banner
         html.Div(
             id="banner",
             className="banner",
-            children=[html.Img(src=app.get_asset_url("super5_logo.png"))],
+            children=[html.Img(src=dash_app.get_asset_url("super5_logo.png"))],
         ),
         # Left column
         html.Div(
@@ -109,7 +89,7 @@ app.layout = html.Div(
                         html.Hr(),
                         html.Div(id="wait_time_table", children=generate_table(), style={"width":"50%"}),
                         html.Hr(),
-                        html.Div(id="wait_time_table", children=generate_graph()),
+                        html.Div(id="wait_time_table2", children=generate_graph()),
                     ],
                 ),
             ],
@@ -118,5 +98,7 @@ app.layout = html.Div(
     ],
 )
 
+app = dash_app.server
+
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run(debug=False)
