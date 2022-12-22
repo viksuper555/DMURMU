@@ -1,4 +1,4 @@
-import dash_html_components as html
+from dash import html
 from layout import description_card, generate_control_card, generate_graph, generate_table
 import dash_bootstrap_components as dbc
 from dash import Dash, Input, State, Output
