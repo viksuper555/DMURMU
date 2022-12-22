@@ -68,6 +68,12 @@ def generate_control_card():
                 merge_duplicate_headers=True
             ),
             html.Br(),
+            dcc.Input(
+                id="cost_input",
+                type='number',
+                placeholder="Please enter cost for experiment.",
+            ),
+            html.Br(),
             html.Div(
                 dbc.Button("Generate", id="generate-btn", size="lg", color="success", n_clicks=0),
                 id="generate-btn-outer"
@@ -81,12 +87,43 @@ def generate_table():
     dash_table.DataTable(
         id='table-results'
     ))
-    
+
 def generate_graph():
     return html.Div(
         cyto.Cytoscape(
             id='cytoscape',
             layout={'name': 'preset'},
             style={'width': '100%', 'height': '600px'},
-            elements=elements
+            elements=elements,
+            stylesheet=[
+            # Group selectors
+            {
+                'selector': 'node',
+                'style': {
+                    'content': 'data(label)'
+                }
+            },
+            # Class selectors
+            {
+                'selector': '.blue',
+                'style': {
+                    'background-color': 'blue',
+                    'line-color': 'blue'
+                }
+            },
+            {
+                'selector': '.green',
+                'style': {
+                    'background-color': 'green',
+                    'line-color': 'green'
+                }
+            },
+            {
+                'selector': '.red',
+                'style': {
+                    'background-color': 'red',
+                    'line-color': 'red'
+                }
+            },
+        ]
         ))

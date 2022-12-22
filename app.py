@@ -23,16 +23,16 @@ app.title = "Decision making under risk and uncertainty"
     [Input('generate-btn','n_clicks')],
     [
         State('table-input','data'),
-        State('cytoscape','elements'),
+        State('cost_input', 'value')
     ])
 
-def update_datatable(n_clicks, df, elements):            
+def update_datatable(n_clicks, df, cost):            
     if not n_clicks:
         raise PreventUpdate
     df = pd.DataFrame(df)
     calc = calculate_result(df)
     columns = [{'name': col, 'id': col} for col in calc.columns]
-    elements = tree.build_tree_analysis(df, calc)
+    elements = tree.build_tree_analysis(df, calc, cost)
     # elements = tree.build_tree_no_analysis(df)
     return calc.to_dict(orient='records'), columns, elements
 
