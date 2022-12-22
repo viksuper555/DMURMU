@@ -29,8 +29,12 @@ app.title = "Decision making under risk and uncertainty"
     ])
 
 def update_datatable(n_clicks, df, value, cost):            
-    if not n_clicks:
+    if not n_clicks or not df or len(df) < 1:
         raise PreventUpdate
+    if not value:
+        value = 0
+    if not cost:
+        cost = 0
     df = pd.DataFrame(df)
     calc = calculate_result(df)
     columns = [{'name': col, 'id': col} for col in calc.columns]
@@ -110,6 +114,7 @@ app.layout = html.Div(
                 ),
             ],
         ),
+        html.Footer('Free open-source project by Viktor Kolev. All rights reserved.')
     ],
 )
 
