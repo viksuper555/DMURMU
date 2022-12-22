@@ -1,12 +1,8 @@
-import plotly.graph_objects as go
 import dash_core_components as dcc
-import dash as html
 import dash_cytoscape as cyto
 import dash_table
 import dash_bootstrap_components as dbc
-from dash import Dash, html, dcc, Input, Output
-from dash_table.Format import Format, Scheme
-import tree
+from dash import html, dcc
 elements = []
 # elements = tree.get_nodes() + tree.get_edges()
 params = [
