@@ -68,10 +68,18 @@ def generate_control_card():
                 merge_duplicate_headers=True
             ),
             html.Br(),
+            dbc.Label('Concession value (in cash):'),
+            dcc.Input(
+                id="value_input",
+                type='number',
+                placeholder="Please enter value.",
+            ),
+            html.Br(),
+            dbc.Label('Cost of experiment:'),
             dcc.Input(
                 id="cost_input",
                 type='number',
-                placeholder="Please enter cost for experiment.",
+                placeholder="Please enter cost.",
             ),
             html.Br(),
             html.Div(
@@ -89,7 +97,7 @@ def generate_table():
     ))
 
 def generate_graph():
-    return html.Div(
+    return html.Div([
         cyto.Cytoscape(
             id='cytoscape',
             layout={'name': 'preset'},
@@ -125,5 +133,27 @@ def generate_graph():
                     'line-color': 'red'
                 }
             },
+            {
+                'selector': '.gold',
+                'style': {
+                    'background-color': 'gold',
+                    'line-color': 'gold'
+                }
+            },
+            {
+                'selector': '.transparent',
+                'style': {
+                    'background-color': 'transparent',
+                    'line-color': 'transparent'
+                }
+            },
+            {
+                'selector': '.whiteSmoke',
+                'style': {
+                    'background-color': 'WhiteSmoke',
+                    'line-color': 'WhiteSmoke'
+                }
+            },
         ]
-        ))
+        ),
+        dbc.Label(id='result_label')])

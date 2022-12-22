@@ -19,22 +19,43 @@ app.title = "Decision making under risk and uncertainty"
         Output('table-results','data'),
         Output('table-results','columns'),
         Output('cytoscape','elements'),
+        Output('result_label','children'),
     ],
     [Input('generate-btn','n_clicks')],
     [
         State('table-input','data'),
-        State('cost_input', 'value')
+        State('value_input', 'value'),
+        State('cost_input', 'value'),
     ])
 
-def update_datatable(n_clicks, df, cost):            
+def update_datatable(n_clicks, df, value, cost):            
     if not n_clicks:
         raise PreventUpdate
     df = pd.DataFrame(df)
     calc = calculate_result(df)
     columns = [{'name': col, 'id': col} for col in calc.columns]
-    elements = tree.build_tree_analysis(df, calc, cost)
-    # elements = tree.build_tree_no_analysis(df)
-    return calc.to_dict(orient='records'), columns, elements
+    elements = tree.add_basic_calcs(value, cost) + tree.build_tree_no_analysis(df) + tree.build_tree_analysis(df, calc, cost, glob_offset=350)    
+    best = None 
+    for el in elements:
+        id = el.get('data').get('id')
+        if id and id.startswith("total"):
+            if not best or parse(el) > parse(best):
+                best = el
+        
+    id = best.get('data').get('id')
+    text = 'The best option is to do '
+    if id == 'total1':
+        text += f'experiment only, '
+    elif id == 'total2':
+        text += f'analysis and experiment, '
+    elif id == 'total3':
+        text += f'no analysis and no experiment, '
+    else:
+        text += f'analysis without experiment, '
+
+    text += f'you can earn up to {parse(best)}.'
+
+    return calc.to_dict(orient='records'), columns, elements, text
 
 def calculate_result(df):
     ti_len = len(df['ti'])
@@ -49,6 +70,8 @@ def calculate_result(df):
     df.columns = ['ε', 'p(ε)'] + [f'ϑ{x+1}' for x in range(ti_len)]
     return df
 
+def parse(el):
+    return float(el.get('data').get('label'))
 
 app.layout = html.Div(
     id="app-container",
